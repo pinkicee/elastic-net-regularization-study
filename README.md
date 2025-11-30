@@ -66,6 +66,7 @@ Datasetul necesită încărcare manuală (nu este inclus în repository).
 ## 📁 Fișiere în acest repository
 
 ├── TEMA2.ipynb # Notebook complet cu cod, grafice și analiză
+
 └── README.md # Documentația proiectului
 
 
