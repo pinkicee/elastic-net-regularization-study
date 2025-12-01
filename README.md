@@ -1,96 +1,95 @@
-# 📘 Studiu de Caz – Regularizare în Modele de Regresie  
-**Elastic Net vs. Ridge vs. Lasso**
+# 📘 Studiu de Caz – Regularizare în Modele de Regressie  
+**Elastic Net vs. Ridge vs. Lasso**  
+*(include și experimentul suplimentar cu validare temporală)*
 
-Acest repository conține notebook-ul **TEMA2.ipynb**, în care este implementat un studiu comparativ al metodelor de regularizare utilizate pentru reducerea overfitting-ului în modelele de regresie.
+Acest repository conține implementarea unui studiu comparativ al metodelor de regularizare folosite pentru reducerea overfitting-ului în modelele de regresie, aplicate pe date reale din proiectul **Beijing Multi-Site Air Quality**.
 
-Scopul proiectului este analiza modului în care tehnicile **L1 (Lasso)**, **L2 (Ridge)** și **Elastic Net** influențează performanța, stabilitatea și generalizarea unui model de regresie aplicat pe date reale.
+Scopul proiectului este evaluarea impactului tehnicilor **L1 (Lasso)**, **L2 (Ridge)** și **Elastic Net** asupra performanței, stabilității coeficienților și capacității de generalizare.
 
 ---
 
 ## 🧠 Conținutul proiectului
 
-Notebook-ul include:
-
-### ✔ Pre-procesarea setului de date  
-- încărcarea datelor din proiectul Beijing Multi-Site Air Quality  
-- curățare și completare valori lipsă  
-- transformări pentru variabile numerice și categorice  
+### ✔ Pre-procesarea setului de date
+- încărcarea și curățarea datelor brute  
+- completarea valorilor lipsă (numeric/categoric)  
+- One-Hot Encoding pentru direcția vântului  
 - scalare standardizată  
-- transformarea logaritmică a variabilei țintă (PM2.5)  
-- împărțirea datelor Train/Test fără shuffle (date temporale)
+- transformarea logaritmică a PM2.5  
+- împărțirea Train/Test menținând ordinea temporală  
 
-### ✔ Implementarea modelelor  
-Modelele antrenate în notebook:
+### ✔ Modelele implementate
+- **Linear Regression** (baseline)  
+- **Ridge Regression (L2)**  
+- **Lasso Regression (L1)**  
+- **Elastic Net (L1+L2)**  
 
-- **Linear Regression** (baseline)
-- **Ridge Regression (L2)**
-- **Lasso Regression (L1)**
-- **Elastic Net (L1+L2)**
+Optimizarea hiperparametrilor a fost realizată atât cu **GridSearchCV (K-Fold)**, cât și într-un **experiment suplimentar** folosind **TimeSeriesSplit**, metoda corectă pentru date temporale.
 
-Optimizarea hiperparametrilor a fost realizată folosind **GridSearchCV**.
-
-### ✔ Evaluare și analiză  
-Notebook-ul conține:
-
-- RMSE pe seturile Train și Test  
-- R² pentru fiecare model  
-- analiza bias–varianță  
+### ✔ Analiză și vizualizări
+- RMSE & R² (Train/Test)  
+- analiză bias–varianță  
 - curbe de învățare  
 - distribuția predicțiilor (KDE)  
-- comparația coeficienților și a coeficienților eliminați  
-- interpretare SHAP pentru modelul Elastic Net  
+- comparația coeficienților + coeficienți eliminați  
+- interpretarea modelului Elastic Net prin **SHAP**  
 
 ---
 
-## 📊 Rezultate pe scurt
+## 📊 Rezultate principale
 
-| Model | RMSE Test | Observații |
-|------|-----------|------------|
-| **Linear Regression** | 0.5047 | Precizie numerică cea mai ridicată, ușor overfitting |
-| **Lasso (L1)** | 0.5050 | Elimină 2 variabile, regularizare foarte slabă |
-| **Ridge (L2)** | 0.5063 | Cel mai stabil în prezența multicoliniarității |
-| **Elastic Net** | 0.5064 | Cel mai bun compromis L1+L2, stabil și robust |
+### 🔹 Rezultatele inițiale (validare K-Fold)
 
-Elastic Net a identificat un **l1_ratio = 0.1**, ceea ce indică un dataset dominat de multicoliniaritate, unde penalizarea L2 este mai potrivită.
+| Model              | RMSE Test | Observații                                      |
+|--------------------|-----------|--------------------------------------------------|
+| Linear Regression  | 0.5047    | Precizie numerică ridicată, varianță ușor mare  |
+| Lasso (L1)         | ~0.505    | Elimină puține variabile, regularizare slabă     |
+| Ridge (L2)         | ~0.506    | Cel mai stabil în prezența multicoliniarității   |
+| Elastic Net        | ~0.506    | Compromis bun L1+L2 → **l1_ratio = 0.1**        |
+
+Concluzia inițială: **Elastic Net** era cel mai echilibrat model între reducerea varianței și menținerea performanței.
+
+---
+
+## 🧪 Experiment suplimentar: TimeSeriesSplit + grid rafinat
+
+Pentru evaluare corectă pe date temporale a fost creat un notebook suplimentar:
+
+elastic_net_timeseries_experiment.ipynb
+
+
+### 🔍 Rezultate cheie
+- Elastic Net converge la **l1_ratio = 0.01**, deci ≈99% penalizare L2 → comportament aproape identic cu **Ridge**.  
+- Lasso elimină **3 coeficienți**, Elastic Net elimină **1**, Ridge nu elimină nimic.  
+- Curbele de învățare indică stabilitate superioară pentru metodele L2.  
+- Distribuția predicțiilor (KDE) este aproape identică pentru toate modelele.
+
+### 🔎 Interpretare
+Datasetul este dominat de multicoliniaritate → penalizarea **L2** este cea mai adecvată.  
+Elastic Net devine, în practică, un model Ridge cu o mică componentă L1 pentru reducerea minimă a zgomotului.
 
 ---
 
 ## ▶️ Rulare notebook
-
-Poți rula notebook-ul în Google Colab încărcând local fișierul **TEMA2.ipynb**.
-
-Datasetul necesită încărcare manuală (nu este inclus în repository).
+Notebook-urile pot fi rulate în **Google Colab** încărcând manual fișierele `.ipynb`.  
+Datasetul Kaggle trebuie încărcat manual (nu este inclus în repository).
 
 ---
 
-## 📁 Fișiere în acest repository
+## 📁 Structura repository-ului
 
-├── TEMA2.ipynb # Notebook complet cu cod, grafice și analiză
-
+├── TEMA2.ipynb # Studiul principal (analiza inițială)
+├── elastic_net_timeseries_experiment.ipynb # Experiment suplimentar (TimeSeriesSplit)
 └── README.md # Documentația proiectului
 
 
 ---
 
-## 📚 Referințe
-
-- Hastie, Tibshirani & Friedman – *The Elements of Statistical Learning*  
-- Tibshirani – *Lasso Regression* (1996)  
-- Zou & Hastie – *Elastic Net* (2005)  
-- scikit-learn documentation  
-- SHAP documentation  
-- Beijing Air Quality Dataset – Kaggle  
-
----
-
 ## 🏁 Concluzie
 
-Proiectul demonstrează că:
+- Regresia liniară oferă cel mai mic RMSE, dar este mai sensibilă la varianță.  
+- Modelele L2 (Ridge, Elastic Net) sunt cele mai stabile pe date reale.  
+- Elastic Net, cu validare temporală, converge aproape complet către Ridge.  
+- SHAP confirmă relevanța variabilelor PM10, DEWP, O3, NO₂ și TEMP.  
 
-- Regresia liniară oferă cea mai mică eroare numerică,  
-- Modelele regularizate sunt mai stabile în situații reale,  
-- **Elastic Net** obține cel mai bun compromis între reducerea varianței și păstrarea performanței,  
-- Interpretarea SHAP confirmă consistența și relevanța variabilelor.
-
-Acest studiu oferă o analiză completă și reproductibilă a modului în care regularizarea influențează calitatea modelelor de regresie pe date reale.
-
+Acest proiect oferă o analiză completă, reproductibilă și interpretabilă a modului în care regularizarea influențează calitatea modelelor de regresie pe date reale.
