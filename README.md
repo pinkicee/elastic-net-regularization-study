@@ -79,7 +79,9 @@ Datasetul Kaggle trebuie încărcat manual (nu este inclus în repository).
 ## 📁 Structura repository-ului
 
 ├── TEMA2.ipynb # Studiul principal (analiza inițială)
+
 ├── elastic_net_timeseries_experiment.ipynb # Experiment suplimentar (TimeSeriesSplit)
+
 └── README.md # Documentația proiectului
 
 
